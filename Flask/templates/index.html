@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Recommender</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Discover Your Next Favorite Meal</h1>
+        <p>Our smart content-based recommendation system analyzes cuisines, locations, and dining types to find perfect matches for your taste buds.</p>
+    </div>
+
+    <form method="POST" action="/predict" class="search-box">
+        {% if restaurants|length == 0 %}
+        <p style="color: var(--accent); padding: 10px;">Warning: Model file missing or corrupted. Run the python script first.</p>
+        {% endif %}
+        <select id="restaurant_name" name="restaurant_name" required>
+            <option value="" disabled {{ 'selected' if not selected_restaurant else '' }}>-- Select a Restaurant You Enjoy --</option>
+            {% for name in restaurants %}
+            <option value="{{ name }}" {{ 'selected' if selected_restaurant == name else '' }}>{{ name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit"><i class="fas fa-search"></i> Find Recommendations</button>
+    </form>
+
+    {% if show_results %}
+    <div class="results-container">
+        <h2 class="results-title">Because you liked <span>{{ selected_restaurant }}</span></h2>
+        
+        {% if recommendations|length == 0 %}
+        <p style="text-align: center; color: var(--text-secondary);">No recommendations found.</p>
+        {% else %}
+        <div class="grid">
+            {% for res in recommendations %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ res.name }}</h3>
+                </div>
+                <div class="card-meta">
+                    <div><i class="fas fa-map-marker-alt"></i> <b>Location:</b> {{ res.location }}</div>
+                    <div><i class="fas fa-wallet"></i> <b>Cost:</b> ₹{{ res.cost }} approx for two</div>
+                </div>
+                <div class="card-bottom-tags">
+                    {% if res.rate and res.rate != 'N/A' %}
+                    <div class="rating"><i class="fas fa-star"></i> {{ res.rate }} / 5</div>
+                    {% endif %}
+                    <div class="tag"><i class="fas fa-utensils"></i> {{ res.cuisines | truncate(25) }}</div>
+                    <div class="match-score">{{ res.score }}% Match</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const restaurantSelect = document.getElementById('restaurant_name');
+
+            if (!restaurantSelect) {
+                return;
+            }
+
+            new Choices(restaurantSelect, {
+                searchEnabled: true,
+                searchPlaceholderValue: 'Search restaurant...',
+                itemSelectText: '',
+                shouldSort: false,
+                allowHTML: false,
+                noResultsText: 'No restaurant found',
+                noChoicesText: 'No restaurants available'
+            });
+        });
+    </script>
+
+</body>
+</html>
