@@ -39,7 +39,7 @@ Restaurant-Recommender-main/
 ## ⚙️ Setup Instructions
 
 1. Clone the repository
-   git clone https://github.com/aabidmulla/restaurant-recommender.git
+   git clone (https://github.com/vaishnaviwarekar1008/restaurant-system.git)
 
 2. Install dependencies
    pip install pandas numpy scikit-learn flask
@@ -69,4 +69,4 @@ Dataset (.csv) and model file (.pkl) are not included due to size limitations.
 
 ## 👨‍💻 Author
 
-Aabid Mulla
+Vaishnavi Warekar
